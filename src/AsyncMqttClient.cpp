@@ -688,20 +688,24 @@ void AsyncMqttClient::connect() {
   _disconnectReason = AsyncMqttClientDisconnectReason::TCP_DISCONNECTED;  // reset any previous
 
   _client.setRxTimeout(_keepAlive);
-
+  bool result=false;
+  
 #if ASYNC_TCP_SSL_ENABLED
   if (_useIp) {
-    _client.connect(_ip, _port, _secure);
+    result = _client.connect(_ip, _port, _secure);
   } else {
-    _client.connect(_host, _port, _secure);
+    result = _client.connect(_host, _port, _secure);
   }
 #else
   if (_useIp) {
-    _client.connect(_ip, _port);
+    result = _client.connect(_ip, _port);
   } else {
-    _client.connect(_host, _port);
+    result = _client.connect(_host, _port);
   }
 #endif
+  if (!result) {
+    Serial.println("# AsyncMQTTClient CONNECT failed");
+  }
 }
 
 void AsyncMqttClient::disconnect(bool force) {
